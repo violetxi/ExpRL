@@ -1,7 +1,7 @@
 # ExpRL: Exploratory RL for LLM Mid-Training
 
 Official code for the paper **"ExpRL: Exploratory RL for LLM Mid-Training"**
-([`paper.pdf`](paper.pdf)).
+([paper](https://arxiv.org/abs/2606.17024)).
 
 Sparse-reward RL for LLM reasoning works only when the base model already has
 **coverage** over productive reasoning paths. ExpRL is an RL-based *mid-training*
