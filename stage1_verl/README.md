@@ -77,7 +77,10 @@ Stage-2 checkpoints; `eval/eval_stage1.sh` / `eval_stage2.sh` collect the
 
 ## Notes
 
-- The checkpoint to evaluate is selected via `model.path=${HF_NAMESPACE:-violetxi}/exp_stage1_<method>`
-  in the inference scripts — set `HF_NAMESPACE` to your account or pass
-  `model.path=<local-or-hf-path>` on the CLI.
+- The checkpoint to evaluate is set via `model.path=` in the inference scripts.
+  The ExpRL variants default to the public checkpoints
+  `${HF_NAMESPACE:-violetxi}/ExpRL-Outcome-Qwen3-4B-Instruct`,
+  `…/ExpRL-Process-Qwen3-4B-Instruct`, and `…/ExpRL-Outcome-Qwen3-8B` (8B mixed-domain);
+  baselines point at their own `exp_stage1_*` inits. Set `HF_NAMESPACE` to your
+  account or pass `model.path=<local-or-hf-path>` on the CLI.
 - `LICENSE` / `Notice.txt` are upstream verl's, retained for attribution.

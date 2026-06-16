@@ -18,11 +18,11 @@ unset ROCR_VISIBLE_DEVICES
 export VLLM_TORCH_COMPILE_LEVEL=0
 
 
-###### AIME 2026 — Dense Outcome (exp_rl_all_domains_stage1_qwen8b_dense_outcome)
+###### AIME 2026 — Dense Outcome (ExpRL-Outcome-Qwen3-8B)
 test_path=data/instruct/aime-2026/train.parquet
 python3 -m verl.trainer.vllm_generation_ray_dp \
 --config-path=config --config-name=vllm_generation \
-model.path=${HF_NAMESPACE:-violetxi}/exp_rl_all_domains_stage1_qwen8b_dense_outcome \
+model.path=${HF_NAMESPACE:-violetxi}/ExpRL-Outcome-Qwen3-8B \
 model.revision=main \
 data.path=$test_path \
 data.prompt_key=prompt \

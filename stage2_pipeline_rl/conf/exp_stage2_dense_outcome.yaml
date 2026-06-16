@@ -2,7 +2,7 @@ defaults:
     - base
     - _self_
 
-model_path: "${oc.env:HF_NAMESPACE,violetxi}/exp_stage1_qwen3-4b_dense_outcome"  # override per README, or pass model_path=<ckpt> on the CLI
+model_path: "${oc.env:HF_NAMESPACE,violetxi}/ExpRL-Outcome-Qwen3-4B-Instruct"  # override per README, or pass model_path=<ckpt> on the CLI
 model_revision: main
 # Eval every 25 steps (each batch is 32 samples with grad accumulation of 8 -> 256 updates per eval)
 eval_every_n_versions: 6400

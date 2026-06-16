@@ -42,9 +42,12 @@ bash scripts/run_exp_stage2_self_distill.sh  # from the self-distillation init
 Each `run_exp_stage2_*.sh` calls `python -m pipelinerl.launch
 --config-name=exp_stage2_<method>` and writes to `./results/...`.
 
-**Choosing the Stage-1 checkpoint.** Configs default to
-`${HF_NAMESPACE:-violetxi}/exp_stage1_qwen3-4b_<method>` (set via the
-`model_path` field in `conf/exp_stage2_*.yaml`). Override per run on the CLI:
+**Choosing the Stage-1 checkpoint.** The `dense_outcome` / `dense_process` configs
+default to the public primed checkpoints
+`${HF_NAMESPACE:-violetxi}/ExpRL-Outcome-Qwen3-4B-Instruct` /
+`…/ExpRL-Process-Qwen3-4B-Instruct` (the `grpo` / `sft` / `self_distill` baselines
+point at their own `exp_stage1_*` inits). Set via the `model_path` field in
+`conf/exp_stage2_*.yaml`, or override per run on the CLI:
 
 ```bash
 bash scripts/run_exp_stage2_grpo.sh \

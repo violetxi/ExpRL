@@ -31,11 +31,11 @@ python3 -c "import google.generativeai" 2>/dev/null || {
 # -----------------------------------------------------------------------------
 
 
-###### OlympiadBench-OE Physics (OE_TO_physics_en_COMP) — Dense Outcome (exp_rl_all_domains_stage1_qwen8b_dense_outcome)
+###### OlympiadBench-OE Physics (OE_TO_physics_en_COMP) — Dense Outcome (ExpRL-Outcome-Qwen3-8B)
 test_path=data/instruct/olympiadbench_oe_physics/train.parquet
 python3 -m verl.trainer.vllm_generation_ray_dp \
 --config-path=config --config-name=vllm_generation \
-model.path=${HF_NAMESPACE:-violetxi}/exp_rl_all_domains_stage1_qwen8b_dense_outcome \
+model.path=${HF_NAMESPACE:-violetxi}/ExpRL-Outcome-Qwen3-8B \
 model.revision=main \
 data.path=$test_path \
 data.prompt_key=prompt \

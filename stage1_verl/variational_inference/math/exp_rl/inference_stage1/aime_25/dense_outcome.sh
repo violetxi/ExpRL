@@ -29,7 +29,7 @@ export VLLM_TORCH_COMPILE_LEVEL=0
 test_path=data/instruct/aime-2025/test.parquet
 python3 -m verl.trainer.vllm_generation_ray_dp \
 --config-path=config --config-name=vllm_generation \
-model.path=${HF_NAMESPACE:-violetxi}/exp_stage1_qwen3-4b_dense_outcome \
+model.path=${HF_NAMESPACE:-violetxi}/ExpRL-Outcome-Qwen3-4B-Instruct \
 model.revision=main \
 data.path=$test_path \
 data.prompt_key=prompt \
