@@ -1,0 +1,38 @@
+# specify the default per-component configs
+defaults:
+
+  # Reuse the standard on-policy distillation config and only extend proof validation fields.
+  - onpolicy_distill
+
+  # self config override anything above
+  - _self_
+
+# config for proof validation
+llm_grader:
+
+  # Model name used for proof validation.
+  name: null
+
+  # Optional provider override. Use "auto" to infer from the model name.
+  provider: auto
+
+  # Prompt template name or path for proof validation.
+  prompt_name: null
+
+  # Maximum raw rubric score used to normalize validation rewards.
+  max_score: 7
+
+  # Optional sampling kwargs passed to the grader backend.
+  sampling_kwargs: null
+
+  # Timeout for each proof validation request in seconds.
+  timeout_seconds: 900
+
+  # Maximum retries for each proof validation request.
+  max_retries: 3
+
+  # Backoff schedule between proof validation retries in seconds.
+  retry_backoff: [15, 30, 60, 90, 120]
+
+  # Optional concurrency cap for proof validation requests.
+  max_concurrency: null

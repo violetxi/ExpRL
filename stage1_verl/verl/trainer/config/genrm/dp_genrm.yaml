@@ -1,0 +1,45 @@
+model:
+  path: null    # if null, uses actor_rollout_ref.model.path
+  trust_remote_code: false
+  use_shm: false
+  external_lib: null
+
+# Total GPUs for GenRM. If null, defaults to rollout.tensor_model_parallel_size.
+# Set this higher than TP size to enable data parallelism (e.g., n_gpus=2 with TP=1 gives DP=2)
+n_gpus: null
+
+rollout:
+  name: vllm  
+  mode: sync
+  tensor_model_parallel_size: 2
+  max_model_len: 40000  
+  gpu_memory_utilization: 0.75
+  prompt_length: 32768
+  response_length: 2048
+  dtype: bfloat16
+  enforce_eager: true
+  temperature: 0.0  
+  top_p: 1.0
+  top_k: -1
+  max_num_batched_tokens: 40000  
+  max_num_seqs: 2048
+  enable_chunked_prefill: true
+  calculate_log_probs: false
+  load_format: dummy_dtensor
+  disable_log_stats: true  
+  free_cache_engine: true
+
+
+fsdp_config:
+  _target_: verl.workers.config.FSDPEngineConfig
+  wrap_policy:
+    min_num_params: 0
+  param_offload: false
+  reshard_after_forward: false
+  forward_prefetch: false
+
+profiler:
+  _target_: verl.utils.profiler.ProfilerConfig
+  discrete: false
+  all_ranks: false
+  ranks: []

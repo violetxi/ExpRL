@@ -1,0 +1,5 @@
+# Don't set working_dir - it causes Ray to upload the entire directory as a package
+# which times out on large codebases. Since all nodes share the filesystem, this isn't needed.
+env_vars:
+  TORCH_NCCL_AVOID_RECORD_STREAMS: "1"
+  VLLM_ATTENTION_BACKEND: "FLASH_ATTN"

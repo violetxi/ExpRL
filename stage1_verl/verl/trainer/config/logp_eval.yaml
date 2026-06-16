@@ -1,0 +1,224 @@
+# Configuration for log probability evaluation
+# This is a simplified config for computing log p(target | input)
+
+# specify the default per-component configs
+defaults:
+
+  # Rollout model config
+  - rollout@actor_rollout_ref.rollout: rollout
+
+  # Data config
+  - data@data: legacy_data
+
+  # NPU profile config
+  - npu_profile@trainer.npu_profile: npu_profile
+
+  # Actor config (minimal, only for inference)
+  - actor@actor_rollout_ref.actor: dp_actor
+
+  # load the reference default config, then apply the fields in the current yaml
+  - _self_
+
+# Data configuration for log probability evaluation
+data:
+
+  # Column name in extra_info to use as input (e.g., 'question')
+  input_key: question
+
+  # Column name in extra_info to use as target (e.g., 'answer', 'solution')
+  target_key: solution
+
+# config for actor, rollout and reference model
+actor_rollout_ref:
+  is_dpo: false
+
+  # Whether it's a hybrid engine, currently only supports hybrid engine
+  hybrid_engine: true
+
+  # common configs for the model
+  model:
+
+    # Huggingface model path. This can be either local path or HDFS path.
+    path: ~/models/deepseek-llm-7b-chat
+
+    # Custom chat template for the model.
+    custom_chat_template: null
+
+    # Whether to use shared memory (SHM) for accelerating the loading of model weights
+    use_shm: false
+
+    # Additional Python packages to register huggingface models/tokenizers.
+    external_lib: null
+
+    # Used to override model's original configurations
+    override_config: {}
+
+    # Enable gradient checkpointing for actor
+    enable_gradient_checkpointing: true
+
+    # Enable activation offloading for actor
+    enable_activation_offload: false
+
+    # Whether to remove padding tokens in inputs during training
+    use_remove_padding: false
+
+    # Set to positive value to enable LoRA (e.g., 32)
+    lora_rank: 0
+
+    # LoRA scaling factor
+    lora_alpha: 16
+
+    # Target modules to apply LoRA
+    target_modules: all-linear
+
+    # Exclude modules from applying Lora
+    exclude_modules: null
+
+    # Whether to use Liger for linear layer fusion
+    use_liger: false
+
+    # Whether to use custom fused kernels (e.g., FlashAttention, fused MLP)
+    use_fused_kernels: false
+
+    # Options for fused kernels
+    fused_kernel_options:
+
+      # Implementation backend for fused kernels. Options: "triton" or "torch".
+      impl_backend: torch
+
+    # Whether to enable loading a remote code model
+    trust_remote_code: false
+
+  # Rollout model config
+  rollout:
+
+    # Enable chunked prefill for higher throughput
+    enable_chunked_prefill: True
+
+    # Which loader to use for rollout model weights
+    load_format: dummy_dtensor
+
+    # For huge models, layered summon can save memory
+    layered_summon: False
+
+  # Actor config (minimal for evaluation - no training needed)
+  actor:
+
+    # No optimization needed for evaluation
+    optim:
+      lr: 1e-6
+
+    # PPO settings (not used in evaluation but required by config)
+    # Set to compatible values matching working main_logp scripts
+    ppo_mini_batch_size: 128
+    ppo_micro_batch_size_per_gpu: 1
+    ppo_epochs: 1
+    use_kl_loss: False
+    entropy_coeff: 0
+    use_dynamic_bsz: True
+    ppo_max_token_len_per_gpu: 32768
+    clip_ratio: 0.2
+    grad_clip: 1
+
+    # FSDP config
+    fsdp_config:
+      param_offload: False
+      optimizer_offload: False
+
+# config for the trainer
+trainer:
+
+  # Whether to balance batch sizes across distributed workers
+  balance_batch: False
+
+  # Number of epochs (set to 1 for evaluation)
+  total_epochs: 1
+
+  # Total training steps
+  total_training_steps: null
+
+  # No profiling by default
+  profile_steps: null
+
+  # Project name for experiment tracking
+  project_name: logp_eval
+
+  # Experiment name for run identification
+  experiment_name: eval
+
+  # Logging backends to use
+  logger: ['console']
+
+  # Number of nodes used
+  nnodes: 1
+
+  # Number of GPUs per node
+  n_gpus_per_node: 8
+
+  # No checkpointing for evaluation
+  save_freq: -1
+
+  # Resume mode: disable for evaluation
+  resume_mode: disable
+
+  # No validation needed
+  val_before_train: False
+  val_only: False
+  test_freq: -1
+
+  # Default local directory for saving results
+  default_local_dir: checkpoints/${trainer.project_name}/${trainer.experiment_name}
+
+  # Default HDFS directory (not used)
+  default_hdfs_dir: null
+
+  # Device to run on
+  device: cuda
+
+  # Timeout for Ray worker registration
+  ray_wait_register_center_timeout: 300
+
+  # Worker implementation
+  use_legacy_worker_impl: auto
+
+  # NPU profile options
+  npu_profile:
+    options: {}
+
+# configs related to ray initialization
+ray_init:
+
+  # Number of CPUs for Ray
+  num_cpus: null
+
+  # Path to save Ray timeline JSON
+  timeline_json_file: null
+
+# Critic config (not used in evaluation but required)
+critic:
+  enable: False
+  strategy: fsdp
+
+# Reward model config (not used in evaluation but required)
+reward_model:
+  enable: False
+
+# Algorithm config (not used in evaluation but required)
+algorithm:
+  _target_: verl.trainer.config.AlgoConfig
+  gamma: 1.0
+  lam: 1.0
+  adv_estimator: gae
+  norm_adv_by_std_in_grpo: True
+  use_kl_in_reward: False
+  kl_penalty: kl
+  kl_ctrl:
+    _target_: verl.trainer.config.KLControlConfig
+    type: fixed
+    kl_coef: 0.001
+    horizon: 10000
+    target_kl: 0.1
+  use_pf_ppo: False
+  pf_ppo:
+    reweight_method: pow
+    weight_pow: 2.0

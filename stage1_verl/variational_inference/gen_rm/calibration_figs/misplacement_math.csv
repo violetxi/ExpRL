@@ -1,0 +1,13 @@
+LLM Judge,Reference condition,Misplace rate
+Qwen3-0.6B,ref,48.6%
+Qwen3-0.6B,noref,48.5%
+Qwen3-0.6B,wrongref,47.5%
+Qwen3-4B,ref,17.8%
+Qwen3-4B,noref,39.2%
+Qwen3-4B,wrongref,50.4%
+Qwen3-8B,ref,18.8%
+Qwen3-8B,noref,36.0%
+Qwen3-8B,wrongref,52.6%
+Qwen3-14B,ref,18.2%
+Qwen3-14B,noref,38.5%
+Qwen3-14B,wrongref,50.2%

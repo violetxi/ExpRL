@@ -1,0 +1,18 @@
+name: sglang
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - sglang[all]
+      - transformers>=4.36.0
+      - datasets
+      - pandas
+      - pyarrow
+      - fastparquet
+      - huggingface_hub
+      - tqdm
+      - torch>=2.0.0
+      - numpy

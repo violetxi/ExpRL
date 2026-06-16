@@ -1,0 +1,52 @@
+# Standalone vLLM generation config
+# Usage: python -m verl.trainer.vllm_generation --config-path=config --config-name=vllm_generation
+
+model:
+  path: ~/models/Qwen2-7B-Instruct
+  revision: main
+
+data:
+  path: ~/data/rlhf/math/test.parquet
+  prompt_key: prompt
+  n_samples: 5                    # Number of samples per prompt
+  output_path: username/output    # HuggingFace Hub path
+  new_column_name: response
+  batch_size: 128                 # Batch size for generation
+  use_chat_template: True
+  enable_thinking: null
+  trust_remote_code: False
+  # Chunking options
+  chunk_output_dir: ./generation_chunks  # Local dir to save intermediate chunks
+  cleanup_chunks: False                   # Whether to delete chunks after merge
+  max_rows: null                          # Optional: cap input rows (useful for smoke tests)
+  # Columns to drop from chunk parquets at write time. The in-memory DataFrame
+  # is kept full for scoring; only the disk file is slimmed. Default drops
+  # reward_model (LCB v6 GT blob is huge — see comment near save site).
+  chunk_drop_cols: ['reward_model']
+
+rollout:
+  temperature: 1.0
+  top_k: -1                       # -1 means no top_k filtering in vLLM
+  top_p: 1.0
+  prompt_length: 2048             # Max prompt length (for reference, vLLM handles this via max_model_len)
+  response_length: 512            # Max tokens to generate
+  # vLLM specific
+  dtype: bfloat16
+  gpu_memory_utilization: 0.9
+  tensor_model_parallel_size: 1   # Number of GPUs for tensor parallelism
+  data_parallel_size: 1           # Number of data parallel replicas (model copies)
+  max_num_batched_tokens: 8192
+  max_model_len: null             # null = auto-detect from model config
+  max_num_seqs: 1024
+  enforce_eager: True
+  enable_chunked_prefill: True
+  disable_log_stats: True
+  ignore_eos: False
+
+scoring:
+  enabled: false                   # When true: each chunk is scored via Ray CPU tasks
+                                   # the moment it lands, in parallel with subsequent gen.
+  data_source_key: data_source     # Column that names the scorer (e.g. "Idavidrein/gpqa")
+  ground_truth_key: reward_model   # Column holding the GT dict
+  ground_truth_field: ground_truth # Field within that dict
+  metrics_filename: metrics.json   # Written under chunk_output_dir

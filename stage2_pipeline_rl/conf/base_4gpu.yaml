@@ -1,0 +1,10 @@
+defaults:
+  - base
+  - _self_
+
+finetune:
+  seq_length: 4000
+  
+llm:
+  parameters:
+    max_tokens: 1500

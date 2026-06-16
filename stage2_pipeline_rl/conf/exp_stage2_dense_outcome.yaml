@@ -1,0 +1,90 @@
+defaults:
+    - base
+    - _self_
+
+model_path: "${oc.env:HF_NAMESPACE,violetxi}/exp_stage1_qwen3-4b_dense_outcome"  # override per README, or pass model_path=<ckpt> on the CLI
+model_revision: main
+# Eval every 25 steps (each batch is 32 samples with grad accumulation of 8 -> 256 updates per eval)
+eval_every_n_versions: 6400
+preprocess:
+  shared_memory_entry_size: 2000000000
+
+finetune:
+  attempts: 32
+  train_batch_size: 32
+  valid_batch_size: 32
+  gradient_accumulation_passes: 16
+  seq_length: 32768
+  seq_parallel: 2
+  learning_rate: 1.0e-6
+  lr_scheduler_type: constant_with_warmup
+  num_warmup_steps: 0
+  rl:
+    entropy_bonus: 0.0001
+    final_entropy_bonus: ${finetune.rl.entropy_bonus}
+    overlong_filtering: false
+  save_checkpoint_steps: 50
+  push_to_hub: false
+  max_train_steps: 720
+
+
+llm:
+  parameters:
+    max_tokens: 16384
+    temperature: 0.8
+  reasoning_delimiters: ["</think>"]
+  wandb_table:
+    enabled: true
+    keep_last_k_groups: 32
+    log_every_n_groups: 32
+
+test_llm:
+  parameters:
+    max_tokens: 16384
+    temperature: 0.8
+    top_p: 0.95
+    top_k: 20
+
+actor:
+  shared_memory_entry_size: 2000000000
+  llm_max_rollouts: 32
+  rollout_policy: pipelinerl.domains.math.generate_math_rollout
+  system_prompt: Please reason step by step, and put your final answer within \boxed{}.
+  task_template: |-
+    {task}
+environment:
+  _target_: pipelinerl.domains.math.MathEnvironment
+dataset_loader: pipelinerl.domains.math.load_datasets
+train_dataset_names:
+  - pope_hard_w_gemini_sol
+  - int_train
+test_dataset_names:
+  # - imo_answer_bench
+  - pope_hard_w_gemini_sol
+  - aime_2025
+  - aime_2026
+
+vllm_config:
+  use_v1: false
+  vllm_kwargs:
+    dtype: bfloat16
+    gpu-memory-utilization: 0.9
+    num-scheduler-steps: 1
+    disable-log-requests: ""
+    disable-frontend-multiprocessing: ""
+    max-num-seqs: ${actor.llm_max_rollouts}
+    max-num-batched-tokens: 32768
+    max-model-len: ${finetune.seq_length}
+    return-tokens-as-token-ids: ""
+    tensor-parallel-size: 1
+    pipeline-parallel-size: 1
+    generation-config: vllm
+
+world:
+  replicas: 1
+  actor_fraction: 4
+  preprocessor_fraction: 0
+  finetune_fraction: 4
+  env_replicas: 1
+  actor_group_port: 9000
+  environment_start_port: 7777

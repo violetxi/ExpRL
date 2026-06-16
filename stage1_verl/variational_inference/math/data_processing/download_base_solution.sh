@@ -1,0 +1,6 @@
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source HuggingFaceH4/aime_2024 --local_dir data/base_solution/aime-2024 --problem_key=question --answer_key=answer --solution_key=solution
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source opencompass/AIME2025 --local_dir data/base_solution/aime-2025 --problem_key=question --answer_key=answer --solution_key=solution
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source agentica-org/DeepScaleR-Preview-Dataset --local_dir data/base_solution/deepscale --problem_key=problem --answer_key=answer --solution_key=solution
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source HuggingFaceH4/MATH-500 --local_dir data/base_solution/math --problem_key=problem --answer_key=answer --solution_key=solution
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source Hothan/OlympiadBench --local_dir data/base_solution/olympiadbench --problem_key question --answer_key final_answer
+python variational_inference/deepscaler/data_processing/base_solution.py --data_source AI-MO/aimo-validation-amc --local_dir data/base_solution/amc --problem_key problem --answer_key answer --solution_key solution

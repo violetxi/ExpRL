@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- ExpRL runtime artifacts (both stages) ---
+# generated training data, checkpoints, rollouts, logs — never commit these
+**/results/
+**/checkpoints/
+**/checkpoints_*/
+**/data/instruct/
+**/chunks_*/
+**/slurm_logs/
+**/slurm_ray_cluster/
+wandb/
+*.parquet
